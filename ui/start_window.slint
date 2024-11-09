@@ -1,46 +1,180 @@
 import { Button, TextEdit, GridBox } from "std-widgets.slint";
 
+export global GlobalProperties {
+    callback add_to_text_area(string, string);
+    callback compute_expression(string);
+    in-out property <string> textarea: ""; // Proprietate pentru afișarea textului în zona de text
+    public function clear_text_area() {
+        GlobalProperties.textarea = "";
+    }
+}
+
+export component CustomButton inherits Rectangle {
+    in property <string> btn_text;
+    in property <length> btn_height: 100px;
+    in property <length> btn_width: 100px;
+    callback btn_callback(string, string);
+    btn_callback(a, b) => {
+        GlobalProperties.add_to_text_area(a, b);
+    }
+
+    width: button.width;
+    height: button.height;
+
+    button := Button {
+        min-width: btn_width;
+        min-height: btn_height;
+        clicked => {
+            btn_callback(GlobalProperties.textarea, btn_text);
+        }
+    }
+
+    Text {
+        text: btn_text;
+        font-family: "NotoSans Nerd Font";
+        font-size: 20px;
+        font-weight: 600;
+    }
+}
+
+export component ClearButton inherits CustomButton {
+    btn_text: "Clear";
+    btn_callback(a, b) => {
+        GlobalProperties.clear_text_area();
+    }
+}
+
+export component EqualButton inherits CustomButton {
+    btn_text: "=";
+    btn_callback(a, b) => {
+        GlobalProperties.compute_expression(a);
+    }
+}
+
 export component AppWindow inherits Window {
     title: "Calculator";
-    in-out property<string> textarea: ""; // Proprietate pentru afișarea textului în zona de text
     callback add_to_text_area(string, string); // Callback pentru adăugarea textului în zona de text
 
     GridLayout {
 
         // TASK: Creează un TextEdit pentru zona de text a calculatorului.
         // HINT: Setează lățimea la 600px și înălțimea la 200px.
-        text_box := TextEdit {
-            // TODO
-            text: textarea; // Leagă `textarea` la textul afișat în acest `TextEdit`
+
+        Row {
+            text_box := TextEdit {
+                colspan: 5;
+                width: 600px;
+                height: 100px;
+                font-size: 50px;
+                horizontal-alignment: right;
+                text: GlobalProperties.textarea; // Leagă `textarea` la textul afișat în acest `TextEdit`
+            }
         }
+
 
         // TASK: Adaugă primul rând de butoane pentru cifre și operatori într-un nou GridLayout.
         // HINT: Fiecare buton va fi într-un `Rectangle` pentru a avea dimensiuni și fundal personalizate. Folosește `Button` pentru acțiune.
 
-        GridLayout {
+        spacing-horizontal: 10px;
 
-            row: 1;
+        Row {
+
+            // row: 1;
 
             // TASK: Creează butonul pentru cifra "1".
             // HINT: Folosește un `Rectangle` pentru dimensiuni și un `Text` pentru afișarea cifrei. Folosește `Button` pentru a înregistra acțiunea.
-            Rectangle {
-               // TODO
-                Button {
-                   // TODO
-
-                   // Callback pentru adăugarea cifrei "1" în zona de text și actualizarea acesteia
-                    clicked => { add_to_text_area(text-box.text, "1") }
-                }
+            CustomButton {
+                btn_text: "1";
             }
 
-            // TASK: Creează butonul pentru cifra "2", urmând aceleași instrucțiuni ca pentru butonul "1".
+            CustomButton {
+                btn_text: "2";
+            }
 
-            // TASK: Creează butonul pentru cifra "3".
+            CustomButton {
+                btn_text: "3";
+            }
 
-            // TASK: Creează butonul pentru operatorul "+".
+            CustomButton {
+                btn_text: "+";
+            }
+
+            CustomButton {
+                btn_text: "-";
+            }
+        }
+
+        Row {
+
+            // row: 2;
+
+            // TASK: Creează butonul pentru cifra "1".
+            // HINT: Folosește un `Rectangle` pentru dimensiuni și un `Text` pentru afișarea cifrei. Folosește `Button` pentru a înregistra acțiunea.
+            CustomButton {
+                btn_text: "4";
+            }
+
+            CustomButton {
+                btn_text: "5";
+            }
+
+            CustomButton {
+                btn_text: "6";
+            }
+
+            CustomButton {
+                btn_text: "*";
+            }
+
+            CustomButton {
+                btn_text: "/";
+            }
+        }
+
+        Row {
+
+            // row: 2;
+
+            // TASK: Creează butonul pentru cifra "1".
+            // HINT: Folosește un `Rectangle` pentru dimensiuni și un `Text` pentru afișarea cifrei. Folosește `Button` pentru a înregistra acțiunea.
+            CustomButton {
+                btn_text: "7";
+            }
+
+            CustomButton {
+                btn_text: "8";
+            }
+
+            CustomButton {
+                btn_text: "9";
+            }
+
+            CustomButton {
+                btn_text: ".";
+            }
+
+            ClearButton {
+                btn_text: "Clear";
+            }
+        }
+
+        Row {
+
+            CustomButton {
+                colspan: 3;
+                btn_text: "0";
+                btn_width: 100%;
+            }
+
+            CustomButton {
+                colspan: 2;
+                col: 3;
+                btn_text: "=";
+            }
         }
 
         // TASK: Adaugă alte rânduri pentru cifrele și operatorii rămași, similar cu primul rând.
         // HINT: Creează noi `GridLayout` și adaugă butoane pentru cifrele "4" până la "9", operatorii "*", "-", "/", ".", "Clear" și "=".
     }
 }
+
